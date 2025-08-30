@@ -44,6 +44,7 @@
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             text-align: center;
+            position: relative;
         }
         
         .login-logo {
@@ -115,6 +116,21 @@
             background: #006daa;
         }
         
+        .debug-info {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 1000;
+            display: block;
+            max-width: 300px;
+        }
+        
+        /* Остальные стили без изменений */
         .animation-screen {
             position: fixed;
             top: 0;
@@ -322,57 +338,10 @@
             margin-left: 10px;
             cursor: pointer;
         }
-        
-        .install-btn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #0088cc;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-            cursor: pointer;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            z-index: 1000;
-            display: none;
-            border: none;
-        }
-        
-        .pwa-help {
-            position: fixed;
-            bottom: 80px;
-            right: 20px;
-            background: #ffcc00;
-            color: #333;
-            padding: 10px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-            cursor: pointer;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            z-index: 1000;
-            display: block;
-            border: none;
-        }
-        
-        .debug-info {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            font-size: 12px;
-            z-index: 1000;
-            display: none;
-        }
     </style>
 </head>
 <body>
-    <div class="debug-info" id="debugInfo"></div>
-    <button class="install-btn" id="installBtn">📲 Установить приложение</button>
-    <button class="pwa-help" id="pwaHelpBtn">ℹ️ Как установить?</button>
+    <div class="debug-info" id="debugInfo">Отладка: введите 8 цифр</div>
     
     <div class="login-screen" id="loginScreen">
         <div class="login-container">
@@ -386,8 +355,8 @@
                 placeholder="Номер телефона" 
                 id="phoneInput"
                 maxlength="8"
-                pattern="[0-9]{8}"
                 title="Введите 8 цифр"
+                autocomplete="off"
             >
             
             <button class="next-btn" id="nextBtn" disabled>Далее</button>
@@ -413,4 +382,112 @@
             <div class="russian-flag"></div>
         </div>
         
-        <div class="
+        <div class="chats">
+            <div class="chat-item">
+                <div class="chat-avatar">А</div>
+                <div class="chat-info">
+                    <div class="chat-name">Анна</div>
+                    <div class="chat-last-message">Привет! Как дела?</div>
+                </div>
+            </div>
+            <div class="chat-item">
+                <div class="chat-avatar">Б</div>
+                <div class="chat-info">
+                    <div class="chat-name">Борис</div>
+                    <div class="chat-last-message">Жду твоего ответа</div>
+                </div>
+            </div>
+            <div class="chat-item">
+                <div class="chat-avatar">В</div>
+                <div class="chat-info">
+                    <div class="chat-name">Виктор</div>
+                    <div class="chat-last-message">Отправлю файлы завтра</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="input-area">
+            <input type="text" placeholder="Сообщение" id="messageInput">
+            <button class="send-btn" id="mainSendBtn">Отправить</button>
+        </div>
+    </div>
+
+    <script>
+        // Элементы DOM
+        const phoneInput = document.getElementById('phoneInput');
+        const nextBtn = document.getElementById('nextBtn');
+        const loginScreen = document.getElementById('loginScreen');
+        const animationScreen = document.getElementById('animationScreen');
+        const mainInterface = document.getElementById('mainInterface');
+        const messageInput = document.getElementById('messageInput');
+        const mainSendBtn = document.getElementById('mainSendBtn');
+        const debugInfo = document.getElementById('debugInfo');
+        
+        // Отладочная информация
+        debugInfo.textContent = 'Отладка: Ожидание ввода...';
+        
+        // Проверка ввода номера - ИСПРАВЛЕННАЯ ВЕРСИЯ
+        phoneInput.addEventListener('input', function() {
+            // Получаем значение и удаляем все нецифровые символы
+            let value = this.value.replace(/\D/g, '');
+            
+            // Ограничиваем длину 8 символами
+            if (value.length > 8) {
+                value = value.substring(0, 8);
+            }
+            
+            // Обновляем значение поля
+            this.value = value;
+            
+            // Проверяем, что введено 8 цифр
+            const isValid = value.length === 8;
+            nextBtn.disabled = !isValid;
+            
+            // Обновляем отладочную информацию
+            debugInfo.textContent = `Введено: ${value.length}/8 цифр | Кнопка: ${isValid ? 'активна' : 'неактивна'}`;
+            
+            console.log('Ввод:', value, 'Длина:', value.length, 'Кнопка активна:', isValid);
+        });
+        
+        // Обработка нажатия кнопки "Далее"
+        nextBtn.addEventListener('click', function() {
+            debugInfo.textContent = 'Запуск анимации...';
+            loginScreen.style.display = 'none';
+            animationScreen.style.display = 'flex';
+            
+            setTimeout(function() {
+                mainInterface.style.display = 'flex';
+                animationScreen.style.display = 'none';
+                debugInfo.textContent = 'Переход в основной интерфейс';
+            }, 2500);
+        });
+        
+        // Базовая логика отправки сообщения в основном интерфейсе
+        mainSendBtn.addEventListener('click', function() {
+            const input = document.querySelector('.input-area input');
+            if(input.value) {
+                alert('Сообщение отправлено: ' + input.value);
+                input.value = '';
+            }
+        });
+        
+        // Добавляем обработчик нажатия Enter в поле ввода
+        document.querySelector('.input-area input').addEventListener('keypress', function(e) {
+            if(e.key === 'Enter') {
+                document.querySelector('.send-btn').click();
+            }
+        });
+        
+        // Дополнительная проверка при загрузке
+        window.addEventListener('load', function() {
+            debugInfo.textContent += ' | Страница загружена';
+            console.log('Элементы загружены:', {
+                phoneInput: !!phoneInput,
+                nextBtn: !!nextBtn,
+                value: phoneInput.value,
+                length: phoneInput.value.length
+            });
+        });
+    </script>
+</body>
+</html>
