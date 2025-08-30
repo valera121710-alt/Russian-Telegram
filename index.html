@@ -576,22 +576,38 @@
         // Отладочная информация
         debugInfo.textContent = 'Отладка: Ожидание ввода...';
         
-        // Проверка ввода номера
-        phoneInput.addEventListener('input', function() {
-            let value = this.value.replace(/\D/g, '');
+        // Функция проверки ввода номера
+        function checkPhoneInput() {
+            const value = phoneInput.value;
+            const digitsOnly = value.replace(/\D/g, '');
+            const isValid = digitsOnly.length === 8;
             
-            if (value.length > 8) {
-                value = value.substring(0, 8);
+            // Обновляем значение поля, оставляя только цифры
+            if (value !== digitsOnly) {
+                phoneInput.value = digitsOnly;
             }
             
-            this.value = value;
+            // Ограничиваем длину 8 символами
+            if (digitsOnly.length > 8) {
+                phoneInput.value = digitsOnly.substring(0, 8);
+            }
             
-            const isValid = value.length === 8;
+            // Активируем/деактивируем кнопку
             nextBtn.disabled = !isValid;
             
-            debugInfo.textContent = `Введено: ${value.length}/8 цифр | Кнопка: ${isValid ? 'активна' : 'неактивна'}`;
+            // Обновляем отладочную информацию
+            debugInfo.textContent = `Введено: ${digitsOnly.length}/8 цифр | Кнопка: ${isValid ? 'активна' : 'неактивна'}`;
             
-            console.log('Ввод:', value, 'Длина:', value.length, 'Кнопка активна:', isValid);
+            console.log('Ввод:', digitsOnly, 'Длина:', digitsOnly.length, 'Кнопка активна:', isValid);
+        }
+        
+        // Проверка ввода номера
+        phoneInput.addEventListener('input', checkPhoneInput);
+        
+        // Также проверяем при загрузке страницы
+        window.addEventListener('load', function() {
+            checkPhoneInput();
+            debugInfo.textContent += ' | Страница загружена';
         });
         
         // Обработка нажатия кнопки "Далее"
@@ -641,19 +657,4 @@
             settingsModal.classList.remove('show');
         });
         
-        // Закрывать меню и модальные окна при клике вне их
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.dropdown-menu') && !e.target.closest('.menu-btn')) {
-                dropdownMenu.classList.remove('show');
-            }
-            
-            if (e.target === settingsModal) {
-                settingsModal.classList.remove('show');
-            }
-        });
-        
-        // Обработчик для радужного режима
-        rainbowModeToggle.addEventListener('change', function() {
-            if (this.checked) {
-                chatsContainer.classList.add('rainbow-bg');
-                chatsContainer.classList.
+    
