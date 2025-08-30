@@ -1,8 +1,18 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Russian Telegram</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- PWA мета-теги -->
+    <meta name="theme-color" content="#0088cc">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Russian TG">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="manifest" href="manifest.json">
+    
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -16,7 +26,6 @@
             overflow: hidden;
         }
         
-        /* Стили для экрана входа */
         .login-screen {
             width: 100%;
             max-width: 480px;
@@ -37,12 +46,13 @@
             height: 80px;
             margin: 0 auto 20px;
             background: #0088cc;
-            border-radius: 50%;
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-size: 40px;
+            font-weight: bold;
         }
         
         .login-title {
@@ -88,6 +98,7 @@
             font-size: 16px;
             cursor: pointer;
             margin-top: 10px;
+            transition: background 0.3s;
         }
         
         .next-btn:disabled {
@@ -95,7 +106,10 @@
             cursor: not-allowed;
         }
         
-        /* Анимация полета телеграма */
+        .next-btn:not(:disabled):hover {
+            background: #006daa;
+        }
+        
         .animation-screen {
             position: fixed;
             top: 0;
@@ -180,7 +194,6 @@
             100% { opacity: 0; transform: scale(2); }
         }
         
-        /* Стили для основного интерфейса (изначально скрыты) */
         .main-interface {
             display: none;
             width: 100%;
@@ -199,7 +212,6 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            position: relative;
         }
         
         .logo-container {
@@ -211,7 +223,13 @@
             width: 30px;
             height: 30px;
             margin-right: 10px;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="white" d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.022c.242-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.652-.64.136-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/></svg>') no-repeat center;
+            background: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0088cc;
+            font-weight: bold;
         }
         
         .russian-flag {
@@ -300,13 +318,43 @@
             cursor: pointer;
         }
         
-        .send-btn:active {
-            background: #006daa;
+        .install-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #0088cc;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: none;
+            border: none;
+        }
+        
+        .pwa-help {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background: #ffcc00;
+            color: #333;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: block;
+            border: none;
         }
     </style>
 </head>
 <body>
-    <!-- Экран входа -->
+    <button class="install-btn" id="installBtn">📲 Установить приложение</button>
+    <button class="pwa-help" id="pwaHelpBtn">ℹ️ Как установить?</button>
+    
     <div class="login-screen" id="loginScreen">
         <div class="login-container">
             <div class="login-logo">TG</div>
@@ -331,18 +379,16 @@
         </div>
     </div>
     
-    <!-- Экран анимации -->
     <div class="animation-screen" id="animationScreen">
         <div class="telegram-icon" id="telegramIcon">TG</div>
         <div class="russia-target" id="russiaTarget"></div>
         <div class="crash-effect" id="crashEffect"></div>
     </div>
     
-    <!-- Основной интерфейс (изначально скрыт) -->
     <div class="main-interface" id="mainInterface">
         <div class="header">
             <div class="logo-container">
-                <div class="logo"></div>
+                <div class="logo">TG</div>
                 <div>Telegram</div>
             </div>
             <div class="russian-flag"></div>
@@ -373,60 +419,86 @@
         </div>
         
         <div class="input-area">
-            <input type="text" placeholder="Сообщение">
-            <button class="send-btn">Отправить</button>
+            <input type="text" placeholder="Сообщение" id="messageInput">
+            <button class="send-btn" id="mainSendBtn">Отправить</button>
         </div>
     </div>
 
     <script>
-        // Элементы DOM
         const phoneInput = document.getElementById('phoneInput');
         const nextBtn = document.getElementById('nextBtn');
         const loginScreen = document.getElementById('loginScreen');
         const animationScreen = document.getElementById('animationScreen');
         const mainInterface = document.getElementById('mainInterface');
-        const telegramIcon = document.getElementById('telegramIcon');
-        const russiaTarget = document.getElementById('russiaTarget');
-        const crashEffect = document.getElementById('crashEffect');
+        const messageInput = document.getElementById('messageInput');
+        const mainSendBtn = document.getElementById('mainSendBtn');
+        const installBtn = document.getElementById('installBtn');
+        const pwaHelpBtn = document.getElementById('pwaHelpBtn');
         
-        // Проверка ввода номера
         phoneInput.addEventListener('input', function() {
             const value = this.value.replace(/\D/g, '');
             this.value = value;
-            
-            // Проверяем, что введено 8 цифр
-            const isValid = value.length === 8;
-            nextBtn.disabled = !isValid;
+            nextBtn.disabled = value.length !== 8;
         });
         
-        // Обработка нажатия кнопки "Далее"
         nextBtn.addEventListener('click', function() {
             loginScreen.style.display = 'none';
             animationScreen.style.display = 'flex';
             
-            // Запускаем анимацию
             setTimeout(function() {
-                // После завершения анимации показываем основной интерфейс
                 mainInterface.style.display = 'flex';
                 animationScreen.style.display = 'none';
-            }, 2500); // Длительность анимации + небольшой запас
+            }, 2500);
         });
         
-        // Базовая логика отправки сообщения в основном интерфейсе
-        document.querySelector('.send-btn').addEventListener('click', function() {
-            const input = document.querySelector('.input-area input');
-            if(input.value) {
-                alert('Отправлено: ' + input.value);
-                input.value = '';
+        mainSendBtn.addEventListener('click', sendMessage);
+        
+        messageInput.addEventListener('keypress', function(e) {
+            if(e.key === 'Enter') sendMessage();
+        });
+        
+        function sendMessage() {
+            if(messageInput.value) {
+                alert('Сообщение отправлено: ' + messageInput.value);
+                messageInput.value = '';
+            }
+        }
+        
+        // PWA Installation
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'block';
+        });
+        
+        installBtn.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    installBtn.style.display = 'none';
+                }
+                deferredPrompt = null;
             }
         });
         
-        // Добавляем обработчик нажатия Enter в поле ввода
-        document.querySelector('.input-area input').addEventListener('keypress', function(e) {
-            if(e.key === 'Enter') {
-                document.querySelector('.send-btn').click();
-            }
+        pwaHelpBtn.addEventListener('click', () => {
+            alert('Чтобы установить приложение:\n\n1. Нажмите кнопку "Установить приложение"\n2. Подтвердите установку\n3. Приложение появится на вашем домашнем экране\n\nИли используйте меню браузера:\nChrome: ⋮ → "Добавить на главный экран"\nSafari: 📤 → "На экран «Домой»"');
         });
+        
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('sw.js')
+                    .then(function(registration) {
+                        console.log('ServiceWorker зарегистрирован успешно');
+                    }, function(err) {
+                        console.log('Ошибка регистрации ServiceWorker: ', err);
+                    });
+            });
+        }
     </script>
 </body>
-</html>
+                </html>
