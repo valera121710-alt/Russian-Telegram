@@ -19,7 +19,6 @@
     <link rel="manifest" href="site.webmanifest">
     
     <style>
-        /* Весь ваш CSS код остаётся без изменений */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -32,73 +31,386 @@
             overflow: hidden;
         }
         
-        /* ... остальной CSS код ... */
+        .login-screen {
+            width: 100%;
+            max-width: 480px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        .login-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: #0088cc;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+        }
+        
+        .login-title {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .login-subtitle {
+            color: #777;
+            margin-bottom: 30px;
+        }
+        
+        .phone-input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .phone-input::placeholder {
+            color: #bbb;
+        }
+        
+        .warning-text {
+            color: rgba(0, 0, 0, 0.5);
+            font-size: 12px;
+            margin-top: 20px;
+            line-height: 1.4;
+        }
+        
+        .next-btn {
+            background: #0088cc;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+        
+        .next-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .next-btn:not(:disabled):hover {
+            background: #006daa;
+        }
+        
+        .animation-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffe6ea;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .telegram-icon {
+            width: 100px;
+            height: 100px;
+            background: #0088cc;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 50px;
+            position: absolute;
+            animation: fly 2s forwards;
+        }
+        
+        .russia-target {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(
+                to bottom,
+                #fff 0%, #fff 33%,
+                #0039a6 33%, #0039a6 66%,
+                #d52b1e 66%, #d52b1e 100%
+            );
+            border-radius: 50%;
+            position: absolute;
+            top: 50px;
+            right: 50px;
+            border: 2px solid #ccc;
+            opacity: 0;
+            animation: appear 0.5s 1.5s forwards;
+        }
+        
+        .crash-effect {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(255, 0, 0, 0.3);
+            opacity: 0;
+            animation: crash 0.5s 2s forwards;
+        }
+        
+        @keyframes fly {
+            0% {
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            70% {
+                top: 70px;
+                left: calc(100% - 100px);
+                transform: scale(1);
+            }
+            100% {
+                top: 70px;
+                left: calc(100% - 100px);
+                transform: scale(0) rotate(45deg);
+            }
+        }
+        
+        @keyframes appear {
+            0% { opacity: 0; transform: scale(0.5); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        @keyframes crash {
+            0% { opacity: 1; transform: scale(0); }
+            50% { opacity: 0.5; transform: scale(1); }
+            100% { opacity: 0; transform: scale(2); }
+        }
+        
+        .main-interface {
+            display: none;
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            background: white;
+            height: 100vh;
+            flex-direction: column;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            background: #0088cc;
+            color: white;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+            background: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0088cc;
+            font-weight: bold;
+        }
+        
+        .russian-flag {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(
+                to bottom,
+                #fff 0%, #fff 33%,
+                #0039a6 33%, #0039a6 66%,
+                #d52b1e 66%, #d52b1e 100%
+            );
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        
+        .chats {
+            flex: 1;
+            overflow-y: auto;
+            background: #fffafb;
+        }
+        
+        .chat-item {
+            padding: 15px;
+            border-bottom: 1px solid #fee6ea;
+            display: flex;
+            align-items: center;
+            transition: background 0.2s;
+        }
+        
+        .chat-item:active {
+            background: #ffe6ea;
+        }
+        
+        .chat-avatar {
+            width: 50px;
+            height: 50px;
+            background: #ffd6de;
+            border-radius: 50%;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ff4d6d;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        
+        .chat-info {
+            flex: 1;
+        }
+        
+        .chat-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .chat-last-message {
+            color: #777;
+            font-size: 14px;
+        }
+        
+        .input-area {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #ffd6de;
+            background: #fffafb;
+        }
+        
+        .input-area input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ffd6de;
+            border-radius: 20px;
+            outline: none;
+            background: white;
+        }
+        
+        .send-btn {
+            background: #0088cc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        
+        .install-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #0088cc;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: none;
+            border: none;
+        }
+        
+        .pwa-help {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background: #ffcc00;
+            color: #333;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            display: block;
+            border: none;
+        }
+        
+        .debug-info {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 1000;
+            display: none;
+        }
     </style>
 </head>
 <body>
-    <!-- Весь ваш HTML код остаётся без изменений -->
+    <div class="debug-info" id="debugInfo"></div>
+    <button class="install-btn" id="installBtn">📲 Установить приложение</button>
+    <button class="pwa-help" id="pwaHelpBtn">ℹ️ Как установить?</button>
     
-    <script>
-        // Весь ваш JavaScript код остаётся без изменений
-    </script>
-</body>
-</html>
-<script>
-// Генерация базовых иконок программно
-document.addEventListener('DOMContentLoaded', function() {
-    // Создаем canvas для генерации иконок
-    const createIcon = (size, text) => {
-        const canvas = document.createElement('canvas');
-        canvas.width = size;
-        canvas.height = size;
-        const ctx = canvas.getContext('2d');
-        
-        // Фон
-        ctx.fillStyle = '#0088cc';
-        ctx.fillRect(0, 0, size, size);
-        
-        // Текст
-        ctx.fillStyle = '#ffffff';
-        ctx.font = `bold ${size/3}px Arial`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(text, size/2, size/2);
-        
-        return canvas.toDataURL('image/png');
-    };
+    <div class="login-screen" id="loginScreen">
+        <div class="login-container">
+            <div class="login-logo">RG</div>
+            <h1 class="login-title">Введите ваш номер</h1>
+            <p class="login-subtitle">Для использования RussiGram</p>
+            
+            <input 
+                type="tel" 
+                class="phone-input" 
+                placeholder="Номер телефона" 
+                id="phoneInput"
+                maxlength="8"
+                pattern="[0-9]{8}"
+                title="Введите 8 цифр"
+            >
+            
+            <button class="next-btn" id="nextBtn" disabled>Далее</button>
+            
+            <p class="warning-text">
+                Внимание! Не надо вводить настоящий номер, этот сайт был создан для теста!!
+            </p>
+        </div>
+    </div>
     
-    // Создаем ссылки для предзагрузки иконок
-    const preloadIcon = (url, sizes, type = 'image/png') => {
-        const link = document.createElement('link');
-        link.rel = 'preload';
-        link.href = url;
-        link.as = 'image';
-        link.setAttribute('image-srcset', `${url} ${sizes}`);
-        link.setAttribute('image-sizes', sizes);
-        document.head.appendChild(link);
-    };
+    <div class="animation-screen" id="animationScreen">
+        <div class="telegram-icon" id="telegramIcon">RG</div>
+        <div class="russia-target" id="russiaTarget"></div>
+        <div class="crash-effect" id="crashEffect"></div>
+    </div>
     
-    // Генерируем и добавляем базовые иконки
-    const iconSizes = [16, 32, 96, 192, 512];
-    iconSizes.forEach(size => {
-        const iconUrl = createIcon(size, 'RG');
-        const link = document.createElement('link');
-        link.rel = 'icon';
-        link.href = iconUrl;
-        link.sizes = `${size}x${size}`;
-        link.type = 'image/png';
-        document.head.appendChild(link);
+    <div class="main-interface" id="mainInterface">
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo">RG</div>
+                <div>RussiGram</div>
+            </div>
+            <div class="russian-flag"></div>
+        </div>
         
-        preloadIcon(iconUrl, `${size}x${size}`);
-    });
-    
-    // Ярлык для apple-touch-icon
-    const appleIconUrl = createIcon(180, 'RG');
-    const appleLink = document.createElement('link');
-    appleLink.rel = 'apple-touch-icon';
-    appleLink.href = appleIconUrl;
-    appleLink.sizes = '180x180';
-    document.head.appendChild(appleLink);
-    preloadIcon(appleIconUrl, '180x180');
-});
-        </script>
+        <div class="
