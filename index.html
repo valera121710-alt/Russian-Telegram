@@ -43,3 +43,62 @@
     </script>
 </body>
 </html>
+<script>
+// Генерация базовых иконок программно
+document.addEventListener('DOMContentLoaded', function() {
+    // Создаем canvas для генерации иконок
+    const createIcon = (size, text) => {
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        
+        // Фон
+        ctx.fillStyle = '#0088cc';
+        ctx.fillRect(0, 0, size, size);
+        
+        // Текст
+        ctx.fillStyle = '#ffffff';
+        ctx.font = `bold ${size/3}px Arial`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(text, size/2, size/2);
+        
+        return canvas.toDataURL('image/png');
+    };
+    
+    // Создаем ссылки для предзагрузки иконок
+    const preloadIcon = (url, sizes, type = 'image/png') => {
+        const link = document.createElement('link');
+        link.rel = 'preload';
+        link.href = url;
+        link.as = 'image';
+        link.setAttribute('image-srcset', `${url} ${sizes}`);
+        link.setAttribute('image-sizes', sizes);
+        document.head.appendChild(link);
+    };
+    
+    // Генерируем и добавляем базовые иконки
+    const iconSizes = [16, 32, 96, 192, 512];
+    iconSizes.forEach(size => {
+        const iconUrl = createIcon(size, 'RG');
+        const link = document.createElement('link');
+        link.rel = 'icon';
+        link.href = iconUrl;
+        link.sizes = `${size}x${size}`;
+        link.type = 'image/png';
+        document.head.appendChild(link);
+        
+        preloadIcon(iconUrl, `${size}x${size}`);
+    });
+    
+    // Ярлык для apple-touch-icon
+    const appleIconUrl = createIcon(180, 'RG');
+    const appleLink = document.createElement('link');
+    appleLink.rel = 'apple-touch-icon';
+    appleLink.href = appleIconUrl;
+    appleLink.sizes = '180x180';
+    document.head.appendChild(appleLink);
+    preloadIcon(appleIconUrl, '180x180');
+});
+        </script>
