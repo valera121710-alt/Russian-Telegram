@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Russian Telegram</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #ffe6ea;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* Стили для экрана входа */
+        .login-screen {
+            width: 100%;
+            max-width: 480px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        
+        .login-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .login-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: #0088cc;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+        }
+        
+        .login-title {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .login-subtitle {
+            color: #777;
+            margin-bottom: 30px;
+        }
+        
+        .phone-input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .phone-input::placeholder {
+            color: #bbb;
+        }
+        
+        .warning-text {
+            color: rgba(0, 0, 0, 0.5);
+            font-size: 12px;
+            margin-top: 20px;
+            line-height: 1.4;
+        }
+        
+        .next-btn {
+            background: #0088cc;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            width: 100%;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .next-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        /* Анимация полета телеграма */
+        .animation-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffe6ea;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .telegram-icon {
+            width: 100px;
+            height: 100px;
+            background: #0088cc;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 50px;
+            position: absolute;
+            animation: fly 2s forwards;
+        }
+        
+        .russia-target {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(
+                to bottom,
+                #fff 0%, #fff 33%,
+                #0039a6 33%, #0039a6 66%,
+                #d52b1e 66%, #d52b1e 100%
+            );
+            border-radius: 50%;
+            position: absolute;
+            top: 50px;
+            right: 50px;
+            border: 2px solid #ccc;
+            opacity: 0;
+            animation: appear 0.5s 1.5s forwards;
+        }
+        
+        .crash-effect {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(255, 0, 0, 0.3);
+            opacity: 0;
+            animation: crash 0.5s 2s forwards;
+        }
+        
+        @keyframes fly {
+            0% {
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            70% {
+                top: 70px;
+                left: calc(100% - 100px);
+                transform: scale(1);
+            }
+            100% {
+                top: 70px;
+                left: calc(100% - 100px);
+                transform: scale(0) rotate(45deg);
+            }
+        }
+        
+        @keyframes appear {
+            0% { opacity: 0; transform: scale(0.5); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        @keyframes crash {
+            0% { opacity: 1; transform: scale(0); }
+            50% { opacity: 0.5; transform: scale(1); }
+            100% { opacity: 0; transform: scale(2); }
+        }
+        
+        /* Стили для основного интерфейса (изначально скрыты) */
+        .main-interface {
+            display: none;
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            background: white;
+            height: 100vh;
+            flex-direction: column;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .header {
+            background: #0088cc;
+            color: white;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="white" d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.022c.242-.213-.054-.334-.373-.121l-6.869 4.326-2.96-.924c-.64-.203-.652-.64.136-.954l11.566-4.458c.538-.196 1.006.128.832.941z"/></svg>') no-repeat center;
+        }
+        
+        .russian-flag {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(
+                to bottom,
+                #fff 0%, #fff 33%,
+                #0039a6 33%, #0039a6 66%,
+                #d52b1e 66%, #d52b1e 100%
+            );
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        
+        .chats {
+            flex: 1;
+            overflow-y: auto;
+            background: #fffafb;
+        }
+        
+        .chat-item {
+            padding: 15px;
+            border-bottom: 1px solid #fee6ea;
+            display: flex;
+            align-items: center;
+            transition: background 0.2s;
+        }
+        
+        .chat-item:active {
+            background: #ffe6ea;
+        }
+        
+        .chat-avatar {
+            width: 50px;
+            height: 50px;
+            background: #ffd6de;
+            border-radius: 50%;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ff4d6d;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        
+        .chat-info {
+            flex: 1;
+        }
+        
+        .chat-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .chat-last-message {
+            color: #777;
+            font-size: 14px;
+        }
+        
+        .input-area {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #ffd6de;
+            background: #fffafb;
+        }
+        
+        .input-area input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ffd6de;
+            border-radius: 20px;
+            outline: none;
+            background: white;
+        }
+        
+        .send-btn {
+            background: #0088cc;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        
+        .send-btn:active {
+            background: #006daa;
+        }
+    </style>
+</head>
+<body>
+    <!-- Экран входа -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-container">
+            <div class="login-logo">TG</div>
+            <h1 class="login-title">Введите ваш номер</h1>
+            <p class="login-subtitle">Для использования Russian Telegram</p>
+            
+            <input 
+                type="tel" 
+                class="phone-input" 
+                placeholder="Номер телефона" 
+                id="phoneInput"
+                maxlength="8"
+                pattern="[0-9]{8}"
+                title="Введите 8 цифр"
+            >
+            
+            <button class="next-btn" id="nextBtn" disabled>Далее</button>
+            
+            <p class="warning-text">
+                Внимание! Не надо вводить настоящий номер, этот сайт был создан для теста!!
+            </p>
+        </div>
+    </div>
+    
+    <!-- Экран анимации -->
+    <div class="animation-screen" id="animationScreen">
+        <div class="telegram-icon" id="telegramIcon">TG</div>
+        <div class="russia-target" id="russiaTarget"></div>
+        <div class="crash-effect" id="crashEffect"></div>
+    </div>
+    
+    <!-- Основной интерфейс (изначально скрыт) -->
+    <div class="main-interface" id="mainInterface">
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo"></div>
+                <div>Telegram</div>
+            </div>
+            <div class="russian-flag"></div>
+        </div>
+        
+        <div class="chats">
+            <div class="chat-item">
+                <div class="chat-avatar">А</div>
+                <div class="chat-info">
+                    <div class="chat-name">Анна</div>
+                    <div class="chat-last-message">Привет! Как дела?</div>
+                </div>
+            </div>
+            <div class="chat-item">
+                <div class="chat-avatar">Б</div>
+                <div class="chat-info">
+                    <div class="chat-name">Борис</div>
+                    <div class="chat-last-message">Жду твоего ответа</div>
+                </div>
+            </div>
+            <div class="chat-item">
+                <div class="chat-avatar">В</div>
+                <div class="chat-info">
+                    <div class="chat-name">Виктор</div>
+                    <div class="chat-last-message">Отправлю файлы завтра</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="input-area">
+            <input type="text" placeholder="Сообщение">
+            <button class="send-btn">Отправить</button>
+        </div>
+    </div>
+
+    <script>
+        // Элементы DOM
+        const phoneInput = document.getElementById('phoneInput');
+        const nextBtn = document.getElementById('nextBtn');
+        const loginScreen = document.getElementById('loginScreen');
+        const animationScreen = document.getElementById('animationScreen');
+        const mainInterface = document.getElementById('mainInterface');
+        const telegramIcon = document.getElementById('telegramIcon');
+        const russiaTarget = document.getElementById('russiaTarget');
+        const crashEffect = document.getElementById('crashEffect');
+        
+        // Проверка ввода номера
+        phoneInput.addEventListener('input', function() {
+            const value = this.value.replace(/\D/g, '');
+            this.value = value;
+            
+            // Проверяем, что введено 8 цифр
+            const isValid = value.length === 8;
+            nextBtn.disabled = !isValid;
+        });
+        
+        // Обработка нажатия кнопки "Далее"
+        nextBtn.addEventListener('click', function() {
+            loginScreen.style.display = 'none';
+            animationScreen.style.display = 'flex';
+            
+            // Запускаем анимацию
+            setTimeout(function() {
+                // После завершения анимации показываем основной интерфейс
+                mainInterface.style.display = 'flex';
+                animationScreen.style.display = 'none';
+            }, 2500); // Длительность анимации + небольшой запас
+        });
+        
+        // Базовая логика отправки сообщения в основном интерфейсе
+        document.querySelector('.send-btn').addEventListener('click', function() {
+            const input = document.querySelector('.input-area input');
+            if(input.value) {
+                alert('Отправлено: ' + input.value);
+                input.value = '';
+            }
+        });
+        
+        // Добавляем обработчик нажатия Enter в поле ввода
+        document.querySelector('.input-area input').addEventListener('keypress', function(e) {
+            if(e.key === 'Enter') {
+                document.querySelector('.send-btn').click();
+            }
+        });
+    </script>
+</body>
+</html>
